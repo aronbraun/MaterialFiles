@@ -17,6 +17,7 @@ import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.text.TextUtils
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -116,6 +117,8 @@ import me.zhanghai.android.files.util.valueCompat
 import me.zhanghai.android.files.util.viewModels
 import me.zhanghai.android.files.util.withChooser
 import me.zhanghai.android.files.viewer.image.ImageViewerActivity
+import me.zhanghai.android.foregroundcompat.ForegroundImageButton
+import kotlin.math.log
 import kotlin.math.roundToInt
 
 class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.Listener,
@@ -503,6 +506,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     }
 
     fun onBackPressed(): Boolean {
+        println("onBackPressed")
         val drawerLayout = binding.drawerLayout
         if (drawerLayout != null && drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START)
@@ -517,6 +521,24 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             return true
         }
         if (viewModel.navigateUp(false)) {
+            return true
+        }
+        return false
+    }
+
+    fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        println(keyCode)
+        println(activity?.getCurrentFocus()?.id?.let { resources.getResourceEntryName(it) })
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && !activity?.getCurrentFocus()?.id?.let {
+                resources.getResourceEntryName(
+                    it
+                ).equals("menuButton")
+            }!!) {
+            binding.drawerLayout?.openDrawer(GravityCompat.START)
+            return true
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && binding.drawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
+            binding.drawerLayout?.closeDrawer(GravityCompat.START)
             return true
         }
         return false
