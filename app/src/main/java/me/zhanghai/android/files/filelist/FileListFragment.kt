@@ -538,9 +538,8 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     }
 
     fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        println(keyCode)
-        println(activity?.getCurrentFocus()?.id?.let { resources.getResourceEntryName(it) })
-        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && !activity?.getCurrentFocus()?.id?.let {
+
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT && viewModel.viewType == FileViewType.LIST && !activity?.getCurrentFocus()?.id?.let {
                 resources.getResourceEntryName(
                     it
                 ).equals("menuButton")
@@ -548,10 +547,12 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             binding.drawerLayout?.openDrawer(GravityCompat.START)
             return true
         }
+
         if (keyCode == KeyEvent.KEYCODE_DPAD_RIGHT && binding.drawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
             binding.drawerLayout?.closeDrawer(GravityCompat.START)
             return true
         }
+
         return false
     }
 
