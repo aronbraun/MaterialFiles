@@ -10,7 +10,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.usb.UsbManager
+import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.storage.StorageVolume
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import me.zhanghai.android.files.app.application
@@ -38,7 +43,24 @@ object StorageVolumeListLiveData : LiveData<List<StorageVolume>>() {
                 // The "file" data scheme is required to receive these broadcasts.
                 // @see https://stackoverflow.com/a/7143298
                 addDataScheme(ContentResolver.SCHEME_FILE)
-            }, ContextCompat.RECEIVER_NOT_EXPORTED
+            }, ContextCompat.RECEIVER_EXPORTED
+        )
+        application.registerReceiverCompat(
+            object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent) {
+                    Thread {
+                        repeat(50) {
+                            Thread.sleep(100)
+                            if (storageManager.storageVolumesCompat != value) {
+                                Handler(Looper.getMainLooper()).post(::loadValue)
+                            }
+                        }
+                    }.start()
+                }
+            }, IntentFilter().apply {
+                addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED)
+                addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+            }, ContextCompat.RECEIVER_EXPORTED
         )
     }
 
