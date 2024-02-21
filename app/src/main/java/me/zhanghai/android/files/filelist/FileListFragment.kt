@@ -329,6 +329,17 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         Settings.FILE_LIST_SHOW_HIDDEN_FILES.observe(viewLifecycleOwner) {
             onShowHiddenFilesChanged(it)
         }
+
+        binding.drawerLayout?.addDrawerListener(
+            object : DrawerLayout.DrawerListener {
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) = Unit
+                override fun onDrawerOpened(drawerView: View) {
+                    drawerView.findViewById<RecyclerView>(R.id.recyclerView).getChildAt(0).requestFocus()
+                }
+                override fun onDrawerClosed(drawerView: View) = Unit
+                override fun onDrawerStateChanged(newState: Int) = Unit
+            }
+        )
     }
 
     override fun onResume() {
