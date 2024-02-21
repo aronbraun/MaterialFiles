@@ -74,13 +74,13 @@
             android:title="@string/settings_bookmark_directories_title"
             android:summary="@string/settings_bookmark_directories_summary_empty" />
 
-        <me.zhanghai.android.files.settings.RootStrategyPreference
-            android:key="@string/pref_key_root_strategy"
-            android:title="@string/settings_root_strategy_title"
-            android:defaultValue="@string/pref_default_value_root_strategy"
-            android:entries="@array/settings_root_strategy_entries"
-            android:entryValues="@array/pref_entry_values_root_strategy"
-            app:useSimpleSummaryProvider="true" />
+<!--        <me.zhanghai.android.files.settings.RootStrategyPreference-->
+<!--            android:key="@string/pref_key_root_strategy"-->
+<!--            android:title="@string/settings_root_strategy_title"-->
+<!--            android:defaultValue="@string/pref_default_value_root_strategy"-->
+<!--            android:entries="@array/settings_root_strategy_entries"-->
+<!--            android:entryValues="@array/pref_entry_values_root_strategy"-->
+<!--            app:useSimpleSummaryProvider="true" />-->
 
         <me.zhanghai.android.files.settings.CharsetPreference
             android:key="@string/pref_key_archive_file_name_encoding"
