@@ -47,7 +47,7 @@ val navigationItems: List<NavigationItem?>
 //                // to avoid confusion.
 //                addAll(storageVolumeItems)
 //            }
-            add(AddStorageItem())
+//            add(AddStorageItem())
             val standardDirectoryItems = standardDirectoryItems
             if (standardDirectoryItems.isNotEmpty()) {
                 add(null)
@@ -361,18 +361,18 @@ private class BookmarkDirectoryItem(
 private val menuItems: List<NavigationItem>
     @Size(3)
     get() = listOf(
-        IntentMenuItem(
-            R.drawable.shared_directory_icon_white_24dp, R.string.navigation_ftp_server,
-            FtpServerActivity::class.createIntent()
-        ),
+//        IntentMenuItem(
+//            R.drawable.shared_directory_icon_white_24dp, R.string.navigation_ftp_server,
+//            FtpServerActivity::class.createIntent()
+//        ),
         IntentMenuItem(
             R.drawable.settings_icon_white_24dp, R.string.navigation_settings,
             SettingsActivity::class.createIntent()
         ),
-        IntentMenuItem(
-            R.drawable.about_icon_white_24dp, R.string.navigation_about,
-            AboutActivity::class.createIntent()
-        )
+//        IntentMenuItem(
+//            R.drawable.about_icon_white_24dp, R.string.navigation_about,
+//            AboutActivity::class.createIntent()
+//        )
     )
 
 private abstract class MenuItem(
