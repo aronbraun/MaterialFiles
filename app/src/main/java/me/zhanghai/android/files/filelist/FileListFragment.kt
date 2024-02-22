@@ -334,7 +334,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             object : DrawerLayout.DrawerListener {
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) = Unit
                 override fun onDrawerOpened(drawerView: View) {
-                    drawerView.findViewById<RecyclerView>(R.id.recyclerView).getChildAt(0).requestFocus()
+                    drawerView.findViewById<RecyclerView>(R.id.recyclerView).requestFocusFromTouch()
                 }
                 override fun onDrawerClosed(drawerView: View) = Unit
                 override fun onDrawerStateChanged(newState: Int) = Unit
