@@ -237,17 +237,17 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         binding.recyclerView.setOnApplyWindowInsetsListener(
             ScrollingViewOnApplyWindowInsetsListener(binding.recyclerView, fastScroller)
         )
-        binding.speedDialView.inflate(R.menu.file_list_speed_dial)
-        binding.speedDialView.setOnActionSelectedListener {
-            when (it.id) {
-                R.id.action_create_file -> showCreateFileDialog()
-                R.id.action_create_directory -> showCreateDirectoryDialog()
-            }
-            // Returning false causes the speed dial to close without animation.
-            //return false;
-            binding.speedDialView.close()
-            true
-        }
+//        binding.speedDialView.inflate(R.menu.file_list_speed_dial)
+//        binding.speedDialView.setOnActionSelectedListener {
+//            when (it.id) {
+//                R.id.action_create_file -> showCreateFileDialog()
+//                R.id.action_create_directory -> showCreateDirectoryDialog()
+//            }
+//            // Returning false causes the speed dial to close without animation.
+//            //return false;
+//            binding.speedDialView.close()
+//            true
+//        }
 
         if (!viewModel.hasTrail) {
             var path = argsPath
@@ -472,6 +472,14 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 newTask()
                 true
             }
+            R.id.action_new_directory -> {
+                showCreateDirectoryDialog()
+                true
+            }
+            R.id.action_new_file -> {
+                showCreateFileDialog()
+                true
+            }
             R.id.action_navigate_up -> {
                 navigateUp()
                 true
@@ -500,10 +508,10 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 copyPath()
                 true
             }
-            R.id.action_open_in_terminal -> {
-                openInTerminal()
-                true
-            }
+//            R.id.action_open_in_terminal -> {
+//                openInTerminal()
+//                true
+//            }
             R.id.action_add_bookmark -> {
                 addBookmark()
                 true
@@ -523,10 +531,10 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             drawerLayout.closeDrawer(GravityCompat.START)
             return true
         }
-        if (binding.speedDialView.isOpen) {
-            binding.speedDialView.close()
-            return true
-        }
+//        if (binding.speedDialView.isOpen) {
+//            binding.speedDialView.close()
+//            return true
+//        }
         if (overlayActionMode.isActive) {
             overlayActionMode.finish()
             return true
@@ -1567,7 +1575,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         val recyclerView: RecyclerView,
         val bottomBarLayout: ViewGroup,
         val bottomToolbar: Toolbar,
-        val speedDialView: SpeedDialView
+//        val speedDialView: SpeedDialView
     ) {
         companion object {
             fun inflate(
@@ -1581,7 +1589,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 val appBarBinding = FileListFragmentAppBarIncludeBinding.bind(bindingRoot)
                 val contentBinding = FileListFragmentContentIncludeBinding.bind(bindingRoot)
                 val bottomBarBinding = FileListFragmentBottomBarIncludeBinding.bind(bindingRoot)
-                val speedDialBinding = FileListFragmentSpeedDialIncludeBinding.bind(bindingRoot)
+//                val speedDialBinding = FileListFragmentSpeedDialIncludeBinding.bind(bindingRoot)
                 return Binding(
                     bindingRoot, includeBinding.drawerLayout, includeBinding.persistentDrawerLayout,
                     includeBinding.persistentBarLayout, appBarBinding.appBarLayout,
@@ -1590,7 +1598,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                     contentBinding.progress, contentBinding.errorText, contentBinding.emptyView,
                     contentBinding.swipeRefreshLayout, contentBinding.recyclerView,
                     bottomBarBinding.bottomBarLayout, bottomBarBinding.bottomToolbar,
-                    speedDialBinding.speedDialView
+//                    speedDialBinding.speedDialView
                 )
             }
         }

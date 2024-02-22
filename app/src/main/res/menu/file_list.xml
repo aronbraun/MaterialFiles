@@ -5,8 +5,7 @@
   ~ All Rights Reserved.
   -->
 
-<menu
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="AlwaysShowAction">
@@ -74,6 +73,19 @@
         app:showAsAction="never" />
 
     <item
+        android:id="@+id/action_new_directory"
+        android:orderInCategory="100"
+        android:title="@string/file_create_directory_title"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_new_file"
+        android:orderInCategory="100"
+        android:title="@string/file_create_file_title"
+        app:showAsAction="never" />
+
+
+    <item
         android:id="@+id/action_navigate_up"
         android:orderInCategory="100"
         android:title="@string/file_list_action_navigate_up"
@@ -99,9 +111,9 @@
 
     <item
         android:id="@+id/action_show_hidden_files"
+        android:checkable="true"
         android:orderInCategory="100"
         android:title="@string/file_list_action_show_hidden_files"
-        android:checkable="true"
         app:showAsAction="never" />
 
     <item
@@ -116,11 +128,11 @@
         android:title="@string/file_list_action_copy_path"
         app:showAsAction="never" />
 
-    <item
+    <!--<item
         android:id="@+id/action_open_in_terminal"
         android:orderInCategory="100"
         android:title="@string/file_list_action_open_in_terminal"
-        app:showAsAction="never" />
+        app:showAsAction="never" />-->
 
     <item
         android:id="@+id/action_add_bookmark"
