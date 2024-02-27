@@ -7,9 +7,11 @@ package me.zhanghai.android.files.filelist
 
 import android.app.Dialog
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
+import android.view.WindowManager.LayoutParams
 import android.widget.EditText
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AlertDialog
@@ -51,6 +53,10 @@ abstract class NameDialogFragment : AppCompatDialogFragment() {
             .create()
             .apply {
                 window!!.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+                window!!.attributes = window!!.attributes.apply {
+                    gravity = Gravity.TOP
+                }
+                window!!.setLayout(LayoutParams.MATCH_PARENT, 600)
                 // Override the listener here so that we have control over when to close the dialog.
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { onOk() }
