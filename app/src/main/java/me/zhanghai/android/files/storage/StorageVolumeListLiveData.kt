@@ -64,7 +64,7 @@ object StorageVolumeListLiveData : LiveData<List<StorageVolume>>() {
         )
     }
 
-    private fun loadValue() {
+     fun loadValue() {
         value = storageManager.storageVolumesCompat
     }
 }

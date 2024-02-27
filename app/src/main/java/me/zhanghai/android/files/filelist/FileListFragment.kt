@@ -77,6 +77,7 @@ import me.zhanghai.android.files.provider.archive.createArchiveRootPath
 import me.zhanghai.android.files.provider.archive.isArchivePath
 import me.zhanghai.android.files.provider.linux.isLinuxPath
 import me.zhanghai.android.files.settings.Settings
+import me.zhanghai.android.files.storage.StorageVolumeListLiveData
 import me.zhanghai.android.files.terminal.Terminal
 import me.zhanghai.android.files.ui.AppBarLayoutExpandHackListener
 import me.zhanghai.android.files.ui.CoordinatorAppBarLayout
@@ -335,6 +336,8 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 override fun onDrawerSlide(drawerView: View, slideOffset: Float) = Unit
                 override fun onDrawerOpened(drawerView: View) {
                     drawerView.findViewById<RecyclerView>(R.id.recyclerView).requestFocusFromTouch()
+                    //reload storage volume list
+                    StorageVolumeListLiveData.loadValue()
                 }
                 override fun onDrawerClosed(drawerView: View) = Unit
                 override fun onDrawerStateChanged(newState: Int) = Unit
