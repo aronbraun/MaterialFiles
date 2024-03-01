@@ -21,6 +21,7 @@ import com.google.android.material.textfield.TextInputLayout
 import me.zhanghai.android.files.databinding.NameDialogBinding
 import me.zhanghai.android.files.databinding.NameDialogNameIncludeBinding
 import me.zhanghai.android.files.util.hideTextInputLayoutErrorOnTextChange
+import me.zhanghai.android.files.util.isMaterial3Theme
 import me.zhanghai.android.files.util.layoutInflater
 import me.zhanghai.android.files.util.setOnEditorConfirmActionListener
 
@@ -56,7 +57,7 @@ abstract class NameDialogFragment : AppCompatDialogFragment() {
                 window!!.attributes = window!!.attributes.apply {
                     gravity = Gravity.TOP
                 }
-                window!!.setLayout(LayoutParams.MATCH_PARENT, 600)
+                window!!.setLayout(LayoutParams.MATCH_PARENT, if (context.isMaterial3Theme) 675 else 600)
                 // Override the listener here so that we have control over when to close the dialog.
                 setOnShowListener {
                     getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener { onOk() }
