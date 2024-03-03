@@ -47,6 +47,19 @@ android {
             }
         }
     }
+    flavorDimensions "version"
+    productFlavors{
+        talkOnly {
+            dimension 'version'
+            manifestPlaceholders = [allowMedia: "false"]
+            buildConfigField 'boolean', 'IS_TALK_ONLY_BUILD', 'true'
+        }
+        regular {
+            dimension 'version'
+            manifestPlaceholders = [allowMedia: "true"]
+            buildConfigField 'boolean', 'IS_TALK_ONLY_BUILD', 'false'
+        }
+    }
     buildFeatures {
         aidl true
         buildConfig true

@@ -19,6 +19,7 @@ import coil.dispose
 import coil.load
 import java8.nio.file.Path
 import me.zhanghai.android.fastscroll.PopupTextProvider
+import me.zhanghai.android.files.BuildConfig
 import me.zhanghai.android.files.R
 import me.zhanghai.android.files.coil.AppIconPackageName
 import me.zhanghai.android.files.compat.foregroundCompat
@@ -274,7 +275,7 @@ class FileListAdapter(
         holder.thumbnailImage.apply {
             dispose()
             setImageDrawable(null)
-            val shouldLoadThumbnail = supportsThumbnail && !shouldLoadThumbnailIcon
+            val shouldLoadThumbnail = supportsThumbnail && !shouldLoadThumbnailIcon && !BuildConfig.IS_TALK_ONLY_BUILD
             isVisible = shouldLoadThumbnail
             if (shouldLoadThumbnail) {
                 load(path to attributes) {

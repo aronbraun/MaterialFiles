@@ -312,7 +312,8 @@
             android:name="me.zhanghai.android.files.viewer.image.ImageViewerActivity"
             android:exported="true"
             android:label="@string/image_viewer_title"
-            android:theme="@style/Theme.MaterialFiles.Immersive">
+            android:theme="@style/Theme.MaterialFiles.Immersive"
+            android:enabled="${allowMedia}">
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
