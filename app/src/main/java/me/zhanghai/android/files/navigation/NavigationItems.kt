@@ -39,14 +39,14 @@ val navigationItems: List<NavigationItem?>
     get() =
         mutableListOf<NavigationItem?>().apply {
             addAll(storageItems)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                // Starting with R, we can get read/write access to non-primary storage volumes with
-                // MANAGE_EXTERNAL_STORAGE. However before R, we only have read-only access to them
-                // and need to use the Storage Access Framework instead, so hide them in this case
-                // to avoid confusion.
-                addAll(storageVolumeItems)
-            }
-            add(AddStorageItem())
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//                // Starting with R, we can get read/write access to non-primary storage volumes with
+//                // MANAGE_EXTERNAL_STORAGE. However before R, we only have read-only access to them
+//                // and need to use the Storage Access Framework instead, so hide them in this case
+//                // to avoid confusion.
+//                addAll(storageVolumeItems)
+//            }
+//            add(AddStorageItem())
             val standardDirectoryItems = standardDirectoryItems
             if (standardDirectoryItems.isNotEmpty()) {
                 add(null)
@@ -308,17 +308,17 @@ private val DEFAULT_STANDARD_DIRECTORIES = listOf(
     StandardDirectory(
         R.drawable.qq_icon_white_24dp, R.string.navigation_standard_directory_qq,
         listOf("Android/data/com.tencent.mobileqq/Tencent/QQfile_recv", "Tencent/QQfile_recv")
-            .joinToString(relativePathSeparator), true
+            .joinToString(relativePathSeparator), false
     ),
     StandardDirectory(
         R.drawable.tim_icon_white_24dp, R.string.navigation_standard_directory_tim,
         listOf("Android/data/com.tencent.tim/Tencent/TIMfile_recv", "Tencent/TIMfile_recv")
-            .joinToString(relativePathSeparator), true
+            .joinToString(relativePathSeparator), false
     ),
     StandardDirectory(
         R.drawable.wechat_icon_white_24dp, R.string.navigation_standard_directory_wechat,
         listOf("Android/data/com.tencent.mm/MicroMsg/Download", "Tencent/MicroMsg/Download")
-            .joinToString(relativePathSeparator), true
+            .joinToString(relativePathSeparator), false
     )
 )
 
@@ -355,18 +355,18 @@ private class BookmarkDirectoryItem(
 private val menuItems: List<NavigationItem>
     @Size(3)
     get() = listOf(
-        IntentMenuItem(
-            R.drawable.shared_directory_icon_white_24dp, R.string.navigation_ftp_server,
-            FtpServerActivity::class.createIntent()
-        ),
+//        IntentMenuItem(
+//            R.drawable.shared_directory_icon_white_24dp, R.string.navigation_ftp_server,
+//            FtpServerActivity::class.createIntent()
+//        ),
         IntentMenuItem(
             R.drawable.settings_icon_white_24dp, R.string.navigation_settings,
             SettingsActivity::class.createIntent()
         ),
-        IntentMenuItem(
-            R.drawable.about_icon_white_24dp, R.string.navigation_about,
-            AboutActivity::class.createIntent()
-        )
+//        IntentMenuItem(
+//            R.drawable.about_icon_white_24dp, R.string.navigation_about,
+//            AboutActivity::class.createIntent()
+//        )
     )
 
 private abstract class MenuItem(

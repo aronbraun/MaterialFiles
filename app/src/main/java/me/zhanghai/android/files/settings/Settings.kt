@@ -18,7 +18,7 @@ import me.zhanghai.android.files.filelist.OpenApkDefaultAction
 import me.zhanghai.android.files.navigation.BookmarkDirectory
 import me.zhanghai.android.files.navigation.StandardDirectorySettings
 import me.zhanghai.android.files.provider.root.RootStrategy
-import me.zhanghai.android.files.storage.FileSystemRoot
+//import me.zhanghai.android.files.storage.FileSystemRoot
 import me.zhanghai.android.files.storage.PrimaryStorageVolume
 import me.zhanghai.android.files.storage.Storage
 import me.zhanghai.android.files.theme.custom.ThemeColor
@@ -29,7 +29,10 @@ object Settings {
     val STORAGES: SettingLiveData<List<Storage>> =
         ParcelValueSettingLiveData(
             R.string.pref_key_storages,
-            listOf(FileSystemRoot(null, true), PrimaryStorageVolume(null, true))
+            listOf(
+//                FileSystemRoot(null, true),
+                PrimaryStorageVolume(null, true)
+            )
         )
 
     val FILE_LIST_DEFAULT_DIRECTORY: SettingLiveData<Path> =
