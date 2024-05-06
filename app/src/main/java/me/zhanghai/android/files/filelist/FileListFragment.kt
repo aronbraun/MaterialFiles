@@ -24,6 +24,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
@@ -36,6 +37,7 @@ import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.isVisible
 import androidx.core.view.updatePaddingRelative
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
@@ -60,6 +62,7 @@ import me.zhanghai.android.files.databinding.FileListFragmentIncludeBinding
 import me.zhanghai.android.files.file.FileItem
 import me.zhanghai.android.files.file.MimeType
 import me.zhanghai.android.files.file.asMimeTypeOrNull
+import me.zhanghai.android.files.file.extension
 import me.zhanghai.android.files.file.fileProviderUri
 import me.zhanghai.android.files.file.isApk
 import me.zhanghai.android.files.file.isImage
@@ -94,6 +97,8 @@ import me.zhanghai.android.files.util.ParcelableArgs
 import me.zhanghai.android.files.util.Stateful
 import me.zhanghai.android.files.util.Success
 import me.zhanghai.android.files.util.args
+import me.zhanghai.android.files.util.asFileName
+import me.zhanghai.android.files.util.asFileNameOrNull
 import me.zhanghai.android.files.util.checkSelfPermission
 import me.zhanghai.android.files.util.copyText
 import me.zhanghai.android.files.util.create
@@ -109,6 +114,7 @@ import me.zhanghai.android.files.util.getQuantityString
 import me.zhanghai.android.files.util.hasSw600Dp
 import me.zhanghai.android.files.util.isOrientationLandscape
 import me.zhanghai.android.files.util.putArgs
+import me.zhanghai.android.files.util.setOnEditorConfirmActionListener
 import me.zhanghai.android.files.util.showToast
 import me.zhanghai.android.files.util.startActivitySafe
 import me.zhanghai.android.files.util.takeIfNotEmpty
@@ -127,7 +133,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     ShowRequestNotificationPermissionRationaleDialogFragment.Listener,
     ShowRequestNotificationPermissionInSettingsRationaleDialogFragment.Listener,
     ShowRequestStoragePermissionRationaleDialogFragment.Listener,
-    ShowRequestStoragePermissionInSettingsRationaleDialogFragment.Listener {
+    ShowRequestStoragePermissionInSettingsRationaleDialogFragment.Listener ,ConfirmReplaceFileDialogFragment.Listener{
     private val requestAllFilesAccessLauncher = registerForActivityResult(
         RequestAllFilesAccessContract(), this::onRequestAllFilesAccessResult
     )
@@ -255,20 +261,37 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             when (val action = intent.action ?: Intent.ACTION_VIEW) {
                 Intent.ACTION_GET_CONTENT, Intent.ACTION_OPEN_DOCUMENT,
                 Intent.ACTION_CREATE_DOCUMENT -> {
+                    val mode = if (action == Intent.ACTION_CREATE_DOCUMENT) {
+                        PickOptions.Mode.CREATE_FILE
+                    } else {
+                        PickOptions.Mode.OPEN_FILE
+                    }
                     val readOnly = action == Intent.ACTION_GET_CONTENT
                     val mimeType = intent.type?.asMimeTypeOrNull() ?: MimeType.ANY
-                    val extraMimeTypes = intent.getStringArrayExtra(Intent.EXTRA_MIME_TYPES)
-                        ?.mapNotNull { it.asMimeTypeOrNull() }?.takeIfNotEmpty()
+                    val fileName = if (mode == PickOptions.Mode.CREATE_FILE) {
+                        intent.getStringExtra(Intent.EXTRA_TITLE)?.asFileNameOrNull()?.value
+                            ?: mimeType.extension?.let { "file.$it" } ?: "file"
+                    } else {
+                        null
+                    }
+                    val extraMimeTypes = if (mode == PickOptions.Mode.OPEN_FILE) {
+                        intent.getStringArrayExtra(Intent.EXTRA_MIME_TYPES)
+                            ?.mapNotNull { it.asMimeTypeOrNull() }?.takeIfNotEmpty()
+                    } else {
+                        null
+                    }
                     val mimeTypes = extraMimeTypes ?: listOf(mimeType)
                     val localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, false)
                     val allowMultiple = intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
                     // TODO: Actually support ACTION_CREATE_DOCUMENT.
-                    pickOptions = PickOptions(readOnly, false, mimeTypes, localOnly, allowMultiple)
+                    pickOptions = PickOptions(mode, fileName, readOnly, false, mimeTypes, localOnly, allowMultiple)
                 }
 
                 Intent.ACTION_OPEN_DOCUMENT_TREE -> {
                     val localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, false)
-                    pickOptions = PickOptions(false, true, emptyList(), localOnly, false)
+                    pickOptions = PickOptions(
+                        PickOptions.Mode.OPEN_DIRECTORY, null, false, true, emptyList(), localOnly, false
+                    )
                 }
 
                 ACTION_VIEW_DOWNLOADS ->
@@ -982,6 +1005,18 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         viewModel.clearSelectedFiles()
     }
 
+    private fun confirmReplaceFile(file: FileItem, setFileName: Boolean = true) {
+        if (setFileName) {
+            val fileName = file.name
+            binding.bottomCreateFileNameEdit.setText(fileName)
+            binding.bottomCreateFileNameEdit.setSelection(
+                0, fileName.asFileName().baseName.length
+            )
+        }
+        ConfirmReplaceFileDialogFragment.show(file, this)
+    }
+
+
     private fun cutFiles(files: FileItemSet) {
         viewModel.addToPasteState(false, files)
         viewModel.selectFiles(files, false)
@@ -1035,18 +1070,48 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     private fun updateBottomToolbar() {
         val pickOptions = viewModel.pickOptions
         if (pickOptions != null) {
-            if (!pickOptions.pickDirectory) {
-                if (bottomActionMode.isActive) {
-                    bottomActionMode.finish()
+
+            bottomActionMode.setMenuResource(R.menu.file_list_pick_bottom)
+            val menu = bottomActionMode.menu
+            when (pickOptions.mode) {
+                PickOptions.Mode.CREATE_FILE -> {
+                    bottomActionMode.title = null
+                    binding.bottomCreateFileNameEdit.isVisible = true
+                    val createMenuItem = menu.findItem(R.id.action_create)
+                    binding.bottomCreateFileNameEdit.setOnEditorConfirmActionListener {
+                        onBottomActionModeMenuItemClicked(createMenuItem)
+                    }
+                    if (!viewModel.isCreateFileNameEditInitialized) {
+                        val fileName = pickOptions.fileName!!
+                        binding.bottomCreateFileNameEdit.setText(fileName)
+                        binding.bottomCreateFileNameEdit.setSelection(
+                            0, fileName.asFileName().baseName.length
+                        )
+                        binding.bottomCreateFileNameEdit.requestFocus()
+                        viewModel.isCreateFileNameEditInitialized = true
+                    }
+                    menu.findItem(R.id.action_open).isVisible = false
+                    createMenuItem.isVisible = true
                 }
-                return
+
+                PickOptions.Mode.OPEN_DIRECTORY -> {
+                    val path = viewModel.currentPath
+                    val navigationRoot = NavigationRootMapLiveData.valueCompat[path]
+                    val name = navigationRoot?.getName(requireContext()) ?: path.name
+                    bottomActionMode.title =
+                        getString(R.string.file_list_open_current_directory_format, name)
+                    binding.bottomCreateFileNameEdit.isVisible = false
+                    menu.findItem(R.id.action_open).isVisible = true
+                    menu.findItem(R.id.action_create).isVisible = false
+                }
+                else -> {
+                    if (bottomActionMode.isActive) {
+                        bottomActionMode.finish()
+                    }
+                    return
+                }
             }
-            bottomActionMode.setNavigationIcon(R.drawable.check_icon_control_normal_24dp)
-            val path = viewModel.currentPath
-            val navigationRoot = NavigationRootMapLiveData.valueCompat[path]
-            val name = navigationRoot?.getName(requireContext()) ?: path.name
-            bottomActionMode.title =
-                getString(R.string.file_list_select_current_directory_format, name)
+
         } else {
             val pasteState = viewModel.pasteState
             val files = pasteState.files
@@ -1092,6 +1157,37 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             })
         }
     }
+
+    private fun onBottomActionModeMenuItemClicked(item: MenuItem): Boolean =
+        when (item.itemId) {
+            R.id.action_open -> {
+                pickPaths(linkedSetOf(viewModel.currentPath))
+                true
+            }
+            R.id.action_create -> {
+                val fileName = binding.bottomCreateFileNameEdit.text.toString()
+                if (fileName.isEmpty()) {
+                    showToast(R.string.file_list_create_file_name_error_empty)
+                } else if (fileName.asFileNameOrNull() == null) {
+                    showToast(R.string.file_list_create_file_name_error_invalid)
+                } else {
+                    val file = getFileWithName(fileName)
+                    if (file != null) {
+                        confirmReplaceFile(file, false)
+                    } else {
+                        val path = viewModel.currentPath.resolve(fileName)
+                        pickPaths(linkedSetOf(path))
+                    }
+                }
+                true
+            }
+            R.id.action_paste -> {
+                pasteFiles(currentPath)
+                true
+            }
+            else -> false
+        }
+
 
     private fun onBottomActionModeItemClicked(
         toolbarActionMode: ToolbarActionMode,
@@ -1281,6 +1377,15 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         val fileListData = viewModel.fileListStateful
         return fileListData is Success && fileListData.value.any { it.name == name }
     }
+
+    private fun getFileWithName(name: String): FileItem? {
+        val fileListData = viewModel.fileListStateful
+        if (fileListData !is Success) {
+            return null
+        }
+        return fileListData.value.find { it.name == name }
+    }
+
 
     override fun renameFile(file: FileItem, newName: String) {
         FileJobService.rename(file.path, newName, requireContext())
@@ -1624,6 +1729,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
         val recyclerView: RecyclerView,
         val bottomBarLayout: ViewGroup,
         val bottomToolbar: Toolbar,
+        val bottomCreateFileNameEdit: EditText
 //        val speedDialView: SpeedDialView
     ) {
         companion object {
@@ -1647,6 +1753,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                     contentBinding.progress, contentBinding.errorText, contentBinding.emptyView,
                     contentBinding.swipeRefreshLayout, contentBinding.recyclerView,
                     bottomBarBinding.bottomBarLayout, bottomBarBinding.bottomToolbar,
+                    bottomBarBinding.bottomCreateFileNameEdit
 //                    speedDialBinding.speedDialView
                 )
             }
@@ -1687,5 +1794,8 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                 )
             }
         }
+    }
+    override fun replaceFile(file: FileItem) {
+        pickFiles(fileItemSetOf(file))
     }
 }

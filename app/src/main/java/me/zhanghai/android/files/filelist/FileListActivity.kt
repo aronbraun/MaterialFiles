@@ -77,4 +77,22 @@ class FileListActivity : AppActivity() {
         override fun parseResult(resultCode: Int, intent: Intent?): Path? =
             if (resultCode == RESULT_OK) intent?.extraPath else null
     }
+
+    class CreateFileContract : ActivityResultContract<Triple<MimeType, String?, Path?>, Path?>() {
+        override fun createIntent(
+            context: Context,
+            input: Triple<MimeType, String?, Path?>
+        ): Intent =
+            FileListActivity::class.createIntent()
+                .setAction(Intent.ACTION_CREATE_DOCUMENT)
+                .setType(input.first.value)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .apply {
+                    input.second?.let { putExtra(Intent.EXTRA_TITLE, it) }
+                    input.third?.let { extraPath = it }
+                }
+
+        override fun parseResult(resultCode: Int, intent: Intent?): Path? =
+            if (resultCode == RESULT_OK) intent?.extraPath else null
+    }
 }
