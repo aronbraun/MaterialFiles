@@ -23,9 +23,9 @@ abstract class ToolbarActionMode(
     private var callback: Callback? = null
 
     init {
-        toolbar.setNavigationOnClickListener { finish() }
+        toolbar.setNavigationOnClickListener { callback?.onToolbarNavigationIconClicked(this) }
         toolbar.setOnMenuItemClickListener {
-            callback?.onToolbarActionModeItemClicked(this, it) ?: false
+            callback?.onToolbarActionModeMenuItemClicked(this, it) ?: false
         }
     }
 
@@ -97,11 +97,13 @@ abstract class ToolbarActionMode(
     interface Callback {
         fun onToolbarActionModeStarted(toolbarActionMode: ToolbarActionMode)
 
-        fun onToolbarActionModeItemClicked(
+        fun onToolbarNavigationIconClicked(toolbarActionMode: ToolbarActionMode) {
+            toolbarActionMode.finish()
+        }
+        fun onToolbarActionModeMenuItemClicked(
             toolbarActionMode: ToolbarActionMode,
             item: MenuItem
         ): Boolean
-
         fun onToolbarActionModeFinished(toolbarActionMode: ToolbarActionMode)
     }
 }

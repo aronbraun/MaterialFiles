@@ -40,6 +40,6 @@
 
         <include layout="@layout/file_list_fragment_bottom_bar_include"/>
 
-        <include layout="@layout/file_list_fragment_speed_dial_include" />
+<!--        <include layout="@layout/file_list_fragment_speed_dial_include" />-->
     </me.zhanghai.android.files.ui.PersistentBarLayout>
 </merge>

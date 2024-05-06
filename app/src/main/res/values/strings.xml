@@ -750,4 +750,13 @@
 
     <string name="shortcut_downloads_title" translatable="false">@string/navigation_standard_directory_downloads</string>
     <string name="shortcut_ftp_server_title" translatable="false">@string/ftp_server_title</string>
+<!--new add by Navi-->
+    <string name="file_list_create_file_name_hint">File name</string>
+    <string name="save_as_error">Error while saving file</string>
+    <string name="save_as_success_format">“%1$s” has been saved to “%2$s”</string>
+    <string name="file_list_create_file_name_error_empty" translatable="false">@string/file_name_error_empty</string>
+    <string name="file_list_create_file_name_error_invalid" translatable="false">@string/file_name_error_invalid</string>
+    <string name="file_replace_message_format">Replace “%1$s”?</string>
+    <string name="file_list_open_current_directory_format">Select “%1$s”</string>
+
 </resources>
