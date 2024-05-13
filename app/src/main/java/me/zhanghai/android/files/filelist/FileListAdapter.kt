@@ -138,7 +138,8 @@ class FileListAdapter(
         return if (pickOptions.pickDirectory) {
             file.attributes.isDirectory
         } else {
-            !file.attributes.isDirectory && pickOptions.mimeTypes.any { it.match(file.mimeType) }
+            // Temporary fix for notes. TODO: revert this
+            !file.attributes.isDirectory /*&& pickOptions.mimeTypes.any { it.match(file.mimeType) }*/
         }
     }
 
