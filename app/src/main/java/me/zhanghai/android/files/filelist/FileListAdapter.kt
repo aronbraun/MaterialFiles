@@ -214,8 +214,9 @@ class FileListAdapter(
         val file = getItem(position)
         val isDirectory = file.attributes.isDirectory
         val isEnabled = isFileSelectable(file) || isDirectory
-        holder.itemLayout.isEnabled = isEnabled
-        holder.menuButton.isEnabled = isEnabled
+        if (!isEnabled) holder.itemLayout.apply { alpha = .5f }
+//        holder.itemLayout.isEnabled = isEnabled
+//        holder.menuButton.isEnabled = isEnabled
         val menu = holder.popupMenu.menu
         val path = file.path
         val hasPickOptions = pickOptions != null
