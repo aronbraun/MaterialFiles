@@ -9,6 +9,7 @@ import android.content.ClipboardManager
 import android.content.ContentResolver
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.hardware.usb.UsbManager
 import android.net.wifi.WifiManager
 import android.os.PowerManager
 import android.os.storage.StorageManager
@@ -49,6 +50,10 @@ val powerManager: PowerManager by lazy {
 
 val storageManager: StorageManager by lazy {
     application.getSystemServiceCompat(StorageManager::class.java)
+}
+
+val usbManager: UsbManager by lazy {
+    application.getSystemServiceCompat(UsbManager::class.java)
 }
 
 val wifiManager: WifiManager by lazy {

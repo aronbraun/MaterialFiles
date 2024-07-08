@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import me.zhanghai.android.files.app.application
 import me.zhanghai.android.files.app.storageManager
+import me.zhanghai.android.files.app.usbManager
+import me.zhanghai.android.files.compat.isPrimaryCompat
 import me.zhanghai.android.files.compat.registerReceiverCompat
 import me.zhanghai.android.files.compat.storageVolumesCompat
 
@@ -64,7 +66,14 @@ object StorageVolumeListLiveData : LiveData<List<StorageVolume>>() {
         )
     }
 
-     fun loadValue() {
-        value = storageManager.storageVolumesCompat
+    fun loadValue() {
+        // as we don't have a criteria how to mach storage value objects to usb device objects,
+        // so if there is any non usb or sdcard device connected, than block all external usb or sd devices
+        val isNonUsbOrSdCardDeviceConnected = usbManager.deviceList.values.any { device ->
+            device.getInterface(0).let { it.interfaceClass != 8 || it.interfaceSubclass != 6 }
+        }
+        value = storageManager.storageVolumesCompat.filter {
+            !isNonUsbOrSdCardDeviceConnected || it.isPrimaryCompat
+        }
     }
 }
