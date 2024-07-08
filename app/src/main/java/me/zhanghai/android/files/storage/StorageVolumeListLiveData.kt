@@ -11,11 +11,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.hardware.usb.UsbManager
-import android.os.Build
+import me.zhanghai.android.files.BuildConfig
 import android.os.Handler
 import android.os.Looper
 import android.os.storage.StorageVolume
-import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import me.zhanghai.android.files.app.application
@@ -73,7 +72,7 @@ object StorageVolumeListLiveData : LiveData<List<StorageVolume>>() {
             device.getInterface(0).let { it.interfaceClass != 8 || it.interfaceSubclass != 6 }
         }
         value = storageManager.storageVolumesCompat.filter {
-            !isNonUsbOrSdCardDeviceConnected || it.isPrimaryCompat
+            (!BuildConfig.IS_TALK_ONLY_BUILD && !isNonUsbOrSdCardDeviceConnected) || it.isPrimaryCompat
         }
     }
 }
