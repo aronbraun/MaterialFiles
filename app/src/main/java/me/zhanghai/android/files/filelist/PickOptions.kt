@@ -14,7 +14,8 @@ class PickOptions(
     val pickDirectory: Boolean,
     val mimeTypes: List<MimeType>,
     val localOnly: Boolean,
-    val allowMultiple: Boolean
+    val allowMultiple: Boolean,
+    val allowMediaSelectionInTalkOnly: Boolean = false
 ){
     enum class Mode {
         OPEN_FILE,

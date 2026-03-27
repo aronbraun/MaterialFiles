@@ -32,6 +32,9 @@ import me.zhanghai.android.files.file.fileSize
 import me.zhanghai.android.files.file.formatShort
 import me.zhanghai.android.files.file.iconRes
 import me.zhanghai.android.files.file.isApk
+import me.zhanghai.android.files.file.isAudio
+import me.zhanghai.android.files.file.isImage
+import me.zhanghai.android.files.file.isVideo
 import me.zhanghai.android.files.provider.archive.isArchivePath
 import me.zhanghai.android.files.provider.common.isEncrypted
 import me.zhanghai.android.files.settings.Settings
@@ -135,6 +138,12 @@ class FileListAdapter(
 
     private fun isFileSelectable(file: FileItem): Boolean {
         val pickOptions = pickOptions ?: return true
+        if (BuildConfig.IS_TALK_ONLY_BUILD && !pickOptions.allowMediaSelectionInTalkOnly &&
+            !pickOptions.pickDirectory &&
+            (file.mimeType.isImage || file.mimeType.isAudio || file.mimeType.isVideo)
+        ) {
+            return false
+        }
         return if (pickOptions.pickDirectory) {
             file.attributes.isDirectory
         } else {
@@ -239,6 +248,9 @@ class FileListAdapter(
         bindViewHolderAnimation(holder)
         holder.itemLayout.apply {
             setOnClickListener {
+                if (!isEnabled) {
+                    return@setOnClickListener
+                }
                 if (selectedFiles.isEmpty()) {
                     listener.openFile(file)
                 } else {
@@ -246,6 +258,9 @@ class FileListAdapter(
                 }
             }
             setOnLongClickListener {
+                if (!isEnabled) {
+                    return@setOnLongClickListener true
+                }
                 if (selectedFiles.isEmpty()) {
                     selectFile(file)
                 } else {

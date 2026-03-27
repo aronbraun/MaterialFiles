@@ -259,6 +259,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
             var path = argsPath
             val intent = args.intent
             var pickOptions: PickOptions? = null
+            val allowMediaSelectionInTalkOnly = isContactsPickerCaller()
             when (val action = intent.action ?: Intent.ACTION_VIEW) {
                 Intent.ACTION_GET_CONTENT, Intent.ACTION_OPEN_DOCUMENT,
                 Intent.ACTION_CREATE_DOCUMENT -> {
@@ -285,13 +286,17 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
                     val localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, false)
                     val allowMultiple = intent.getBooleanExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
                     // TODO: Actually support ACTION_CREATE_DOCUMENT.
-                    pickOptions = PickOptions(mode, fileName, readOnly, false, mimeTypes, localOnly, allowMultiple)
+                    pickOptions = PickOptions(
+                        mode, fileName, readOnly, false, mimeTypes, localOnly, allowMultiple,
+                        allowMediaSelectionInTalkOnly
+                    )
                 }
 
                 Intent.ACTION_OPEN_DOCUMENT_TREE -> {
                     val localOnly = intent.getBooleanExtra(Intent.EXTRA_LOCAL_ONLY, false)
                     pickOptions = PickOptions(
-                        PickOptions.Mode.OPEN_DIRECTORY, null, false, true, emptyList(), localOnly, false
+                        PickOptions.Mode.OPEN_DIRECTORY, null, false, true, emptyList(), localOnly,
+                        false, false
                     )
                 }
 
@@ -1666,6 +1671,7 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
     }
 
     companion object {
+        private const val CONTACTS_PACKAGE_NAME = "com.android.contacts"
         private const val ACTION_VIEW_DOWNLOADS =
             "me.zhanghai.android.files.intent.action.VIEW_DOWNLOADS"
 
@@ -1700,6 +1706,16 @@ class FileListFragment : Fragment(), BreadcrumbLayout.Listener, FileListAdapter.
 
     @Parcelize
     class Args(val intent: Intent) : ParcelableArgs
+
+    private fun isContactsPickerCaller(): Boolean {
+        val activity = activity ?: return false
+        val callingPackage = activity.callingPackage
+        if (callingPackage == CONTACTS_PACKAGE_NAME) {
+            return true
+        }
+        val referrer = activity.referrer
+        return referrer?.scheme == "android-app" && referrer.host == CONTACTS_PACKAGE_NAME
+    }
 
     private class Binding private constructor(
         val root: View,
