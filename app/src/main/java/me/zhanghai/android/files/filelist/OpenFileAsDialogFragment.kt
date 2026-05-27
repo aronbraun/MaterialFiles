@@ -34,8 +34,9 @@ class OpenFileAsDialogFragment : AppCompatDialogFragment() {
         MaterialAlertDialogBuilder(requireContext(), theme)
             .setTitle(getString(R.string.file_open_as_title_format, args.path.name))
             .apply {
-                val isVcf = args.path.name.endsWith(".vcf", ignoreCase = true)
-                val fileTypes = if (isVcf) {
+                val extension = args.path.name.substringAfterLast('.', "").lowercase()
+                val isContact = extension in CONTACT_EXTENSIONS
+                val fileTypes = if (isContact) {
                     FILE_TYPES.filter { it.first != R.string.file_open_as_type_image }
                 } else {
                     FILE_TYPES
@@ -61,6 +62,10 @@ class OpenFileAsDialogFragment : AppCompatDialogFragment() {
     }
 
     companion object {
+        private val CONTACT_EXTENSIONS = setOf(
+            "vcf", "vcard", "ldif", "csv", "contact", "mab", "wab", "abbu"
+        )
+
         private val FILE_TYPES = listOf(
             R.string.file_open_as_type_text to "text/plain",
             R.string.file_open_as_type_image to "image/*",

@@ -39,8 +39,9 @@ class RenameFileDialogFragment : FileNameDialogFragment() {
         get() = args.file.name
 
     override fun isNameValid(name: String): Boolean {
-        if (args.file.extension.equals("vcf", ignoreCase = true)
-            && !name.endsWith(".vcf", ignoreCase = true)) {
+        val originalExtension = args.file.extension.lowercase()
+        if (originalExtension in CONTACT_EXTENSIONS
+            && !name.endsWith(".$originalExtension", ignoreCase = true)) {
             binding.nameLayout.error = getString(R.string.file_name_error_vcf_extension)
             return false
         }
@@ -52,6 +53,10 @@ class RenameFileDialogFragment : FileNameDialogFragment() {
     }
 
     companion object {
+        private val CONTACT_EXTENSIONS = setOf(
+            "vcf", "vcard", "ldif", "csv", "contact", "mab", "wab", "abbu"
+        )
+
         fun show(file: FileItem, fragment: Fragment) {
             RenameFileDialogFragment().putArgs(Args(file)).show(fragment)
         }
