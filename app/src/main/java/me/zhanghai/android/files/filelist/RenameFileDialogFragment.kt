@@ -38,6 +38,15 @@ class RenameFileDialogFragment : FileNameDialogFragment() {
     override val initialName: String?
         get() = args.file.name
 
+    override fun isNameValid(name: String): Boolean {
+        if (args.file.extension.equals("vcf", ignoreCase = true)
+            && !name.endsWith(".vcf", ignoreCase = true)) {
+            binding.nameLayout.error = getString(R.string.file_name_error_vcf_extension)
+            return false
+        }
+        return super.isNameValid(name)
+    }
+
     override fun onOk(name: String) {
         listener.renameFile(args.file, name)
     }

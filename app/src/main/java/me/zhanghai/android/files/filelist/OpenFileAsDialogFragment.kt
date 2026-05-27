@@ -34,8 +34,14 @@ class OpenFileAsDialogFragment : AppCompatDialogFragment() {
         MaterialAlertDialogBuilder(requireContext(), theme)
             .setTitle(getString(R.string.file_open_as_title_format, args.path.name))
             .apply {
-                val items = FILE_TYPES.map { getString(it.first) }.toTypedArray<CharSequence>()
-                setItems(items) { _, which -> openAs(FILE_TYPES[which].second) }
+                val isVcf = args.path.name.endsWith(".vcf", ignoreCase = true)
+                val fileTypes = if (isVcf) {
+                    FILE_TYPES.filter { it.first != R.string.file_open_as_type_image }
+                } else {
+                    FILE_TYPES
+                }
+                val items = fileTypes.map { getString(it.first) }.toTypedArray<CharSequence>()
+                setItems(items) { _, which -> openAs(fileTypes[which].second) }
             }
             .create()
 

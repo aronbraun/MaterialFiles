@@ -241,6 +241,7 @@
     <string name="file_name_error_empty">File name cannot be empty</string>
     <string name="file_name_error_invalid">Invalid file name</string>
     <string name="file_name_error_already_exists">A file with this name already exists</string>
+    <string name="file_name_error_vcf_extension">vcf extension cannot be changed</string>
     <string name="file_delete_message_file_format">Delete “%1$s”?</string>
     <string name="file_delete_message_directory_format">Delete folder “%1$s” and its contents?</string>
     <plurals name="file_delete_message_multiple_files_format">
